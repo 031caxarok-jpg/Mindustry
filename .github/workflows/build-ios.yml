@@ -1,4 +1,4 @@
-name: Build iOS IPA
+name: Build Mindustry iOS IPA
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout Mindustry
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Java
@@ -17,10 +17,13 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Make Gradle executable
+      - name: Clone Arc
+        run: git clone https://github.com/Anuken/Arc ../Arc
+
+      - name: Grant permissions
         run: chmod +x gradlew
 
-      - name: Build iOS
+      - name: Build iOS IPA
         run: |
           ./gradlew pack -PnoLocalArc=true
           ./gradlew :ios:deploy -Probovm.iosSkipSigning=true -PnoLocalArc=true
@@ -28,5 +31,5 @@ jobs:
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: IOSLauncher
+          name: Mindustry-iOS
           path: ios/build/robovm/*.ipa
