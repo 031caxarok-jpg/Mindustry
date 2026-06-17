@@ -1,19 +1,28 @@
-runPush:
-  runs-on: ubuntu-latest
+name: build-ios
 
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
-    - name: Set up Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: temurin
-        java-version: 17
-        cache: gradle
+jobs:
+  runPush:
+    runs-on: ubuntu-latest
 
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Run tests
-      run: ./gradlew tests:test --rerun --stacktrace
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v3
+
+      - name: Run tests
+        run: ./gradlew tests:test --rerun --stacktrace
