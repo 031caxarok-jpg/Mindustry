@@ -1,0 +1,32 @@
+name: Build iOS IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Mindustry
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Make Gradle executable
+        run: chmod +x gradlew
+
+      - name: Build iOS
+        run: |
+          ./gradlew pack -PnoLocalArc=true
+          ./gradlew :ios:deploy -Probovm.iosSkipSigning=true -PnoLocalArc=true
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: IOSLauncher
+          path: ios/build/robovm/*.ipa
