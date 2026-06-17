@@ -8,7 +8,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Setup Java
@@ -17,18 +17,25 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Clone Arc
+      # 🔥 ВАЖНО: фиксируем Xcode 15 (RoboVM compatible)
+      - name: Setup Xcode 15.4
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 15.4
+
+      - name: Verify Xcode version
+        run: xcodebuild -version
+
+      - name: Clone Arc backend
         run: git clone https://github.com/Anuken/Arc ../Arc
 
-      - name: Grant permissions
+      - name: Give permissions to gradlew
         run: chmod +x gradlew
 
-      - name: Build iOS IPA
-        run: |
-          ./gradlew pack -PnoLocalArc=true
-          ./gradlew :ios:deploy -Probovm.iosSkipSigning=true -PnoLocalArc=true
+      - name: Build Mindustry iOS IPA
+        run: ./gradlew ios:createIPA -PnoLocalArc=true
 
-      - name: Upload IPA
+      - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: Mindustry-iOS
